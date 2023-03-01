@@ -1,0 +1,21 @@
+Added Component: Designator=R8(RESC3216X70X50NL05T20)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Panasonic"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number"; Value = "ERJ-8GEY0R00V"; VariantName = "[No Variations]"
+Added Component: Designator=R9(RESC3216X70X50NL05T20)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Panasonic"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number"; Value = "ERJ-8GEY0R00V"; VariantName = "[No Variations]"
+Added Component: Designator=R?(RESC3216X70X50NL05T20)
+Add component (AddParameter): Name = "Manufacturer"; Value = "Panasonic"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number"; Value = "ERJ-8GEY0R00V"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=Rx Pin=R8-1
+Added Pin To Net: NetName=Tx Pin=R9-1
+Added Pin To Net: NetName=IO27 Pin=R?-2
+Added Pin To Net: NetName=NetMD1_34 Pin=MD1-34
+Added Pin To Net: NetName=NetMD1_34 Pin=R9-2
+Added Net: Name=NetMD1_34
+Added Pin To Net: NetName=NetMD1_35 Pin=MD1-35
+Added Pin To Net: NetName=NetMD1_35 Pin=R8-2
+Added Net: Name=NetMD1_35
+Added Member To Class: ClassName=PCB1 Member=Component R8 ERJ-8GEY0R00V
+Added Member To Class: ClassName=PCB1 Member=Component R9 ERJ-8GEY0R00V
+Added Member To Class: ClassName=PCB1 Member=Component R? ERJ-8GEY0R00V

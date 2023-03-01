@@ -1,0 +1,136 @@
+Added Component: Designator=J2(FP-M52-040023V2045-MFG)
+Add component (AddParameter): Name = "Case/Package"; Value = "SIL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Connector Type"; Value = "Header"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Contact Finish - Mating"; Value = "GOLD"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Contact Gender"; Value = "Male"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Contact Material"; Value = "Brass"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Contact Plating"; Value = "Gold"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Contact Resistance"; Value = "30mR"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Contact Shape"; Value = "Square"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Contact Type"; Value = "Male Pin"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Current Rating"; Value = "1A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Depth"; Value = "2.5mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Fastening Type"; Value = "Pull"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Flammability Rating"; Value = "UL94 V-0"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Gender"; Value = "Male"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Housing Color"; Value = "Black"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Housing Material"; Value = "Nylon"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Insulation Color"; Value = "Black"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Insulation Material"; Value = "Nylon"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Insulation Resistance"; Value = "1GR"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Length"; Value = "25.4mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mated Stacking Heights"; Value = "11mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Max Current Rating"; Value = "1A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Max Operating Temperature"; Value = "105°C"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Min Operating Temperature"; Value = "-40°C"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mount"; Value = "Through Hole"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Number of Contacts"; Value = "20"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Number of Positions"; Value = "20"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Number of Rows"; Value = "1"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Orientation"; Value = "Straight"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package Quantity"; Value = "300"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Packaging"; Value = "Bulk"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Pitch"; Value = "1.27mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Reach SVHC Compliant"; Value = "Yes"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Series"; Value = "M52"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Termination"; Value = "Solder"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage Rating"; Value = "500V"; VariantName = "[No Variations]"
+Added Component: Designator=J3(FP-M52-040023V2045-MFG)
+Add component (AddParameter): Name = "Case/Package"; Value = "SIL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Connector Type"; Value = "Header"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Contact Finish - Mating"; Value = "GOLD"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Contact Gender"; Value = "Male"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Contact Material"; Value = "Brass"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Contact Plating"; Value = "Gold"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Contact Resistance"; Value = "30mR"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Contact Shape"; Value = "Square"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Contact Type"; Value = "Male Pin"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Current Rating"; Value = "1A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Depth"; Value = "2.5mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Fastening Type"; Value = "Pull"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Flammability Rating"; Value = "UL94 V-0"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Gender"; Value = "Male"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Housing Color"; Value = "Black"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Housing Material"; Value = "Nylon"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Insulation Color"; Value = "Black"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Insulation Material"; Value = "Nylon"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Insulation Resistance"; Value = "1GR"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Length"; Value = "25.4mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mated Stacking Heights"; Value = "11mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Max Current Rating"; Value = "1A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Max Operating Temperature"; Value = "105°C"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Min Operating Temperature"; Value = "-40°C"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mount"; Value = "Through Hole"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Number of Contacts"; Value = "20"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Number of Positions"; Value = "20"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Number of Rows"; Value = "1"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Orientation"; Value = "Straight"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package Quantity"; Value = "300"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Packaging"; Value = "Bulk"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Pitch"; Value = "1.27mm"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Reach SVHC Compliant"; Value = "Yes"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Series"; Value = "M52"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Termination"; Value = "Solder"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Voltage Rating"; Value = "500V"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=3V3 Pin=J2-1
+Added Pin To Net: NetName=EN Pin=J2-2
+Added Pin To Net: NetName=IO34 Pin=J2-5
+Added Pin To Net: NetName=IO35 Pin=J2-6
+Added Pin To Net: NetName=IO32 Pin=J2-7
+Added Pin To Net: NetName=IO33 Pin=J2-8
+Added Pin To Net: NetName=IO25 Pin=J2-9
+Added Pin To Net: NetName=IO26 Pin=J2-10
+Added Pin To Net: NetName=IO27 Pin=J2-11
+Added Pin To Net: NetName=IO14 Pin=J2-12
+Added Pin To Net: NetName=IO12 Pin=J2-13
+Added Pin To Net: NetName=GND Pin=J2-14
+Added Pin To Net: NetName=IO13 Pin=J2-15
+Added Pin To Net: NetName=5V Pin=J2-19
+Added Pin To Net: NetName=GND Pin=J2-20
+Added Pin To Net: NetName=GND Pin=J3-1
+Added Pin To Net: NetName=IO23 Pin=J3-2
+Added Pin To Net: NetName=IO22 Pin=J3-3
+Added Pin To Net: NetName=IO21 Pin=J3-6
+Added Pin To Net: NetName=GND Pin=J3-7
+Added Pin To Net: NetName=IO19 Pin=J3-8
+Added Pin To Net: NetName=IO18 Pin=J3-9
+Added Pin To Net: NetName=IO5 Pin=J3-10
+Added Pin To Net: NetName=IO17 Pin=J3-11
+Added Pin To Net: NetName=IO16 Pin=J3-12
+Added Pin To Net: NetName=IO4 Pin=J3-13
+Added Pin To Net: NetName=IO0 Pin=J3-14
+Added Pin To Net: NetName=IO2 Pin=J3-15
+Added Pin To Net: NetName=IO15 Pin=J3-16
+Added Pin To Net: NetName=GND Pin=J3-20
+Added Pin To Net: NetName=CLK Pin=J3-19
+Added Pin To Net: NetName=CLK Pin=MD1-20
+Added Net: Name=CLK
+Added Pin To Net: NetName=CMD Pin=J2-18
+Added Pin To Net: NetName=CMD Pin=MD1-19
+Added Net: Name=CMD
+Added Pin To Net: NetName=RX0 Pin=J3-5
+Added Net: Name=RX0
+Added Pin To Net: NetName=SD0 Pin=J3-18
+Added Pin To Net: NetName=SD0 Pin=MD1-21
+Added Net: Name=SD0
+Added Pin To Net: NetName=SD1 Pin=J3-17
+Added Pin To Net: NetName=SD1 Pin=MD1-22
+Added Net: Name=SD1
+Added Pin To Net: NetName=SD2 Pin=J2-16
+Added Pin To Net: NetName=SD2 Pin=MD1-17
+Added Net: Name=SD2
+Added Pin To Net: NetName=SD3 Pin=J2-17
+Added Pin To Net: NetName=SD3 Pin=MD1-18
+Added Net: Name=SD3
+Added Pin To Net: NetName=SV+ Pin=J2-3
+Added Pin To Net: NetName=SV+ Pin=MD1-4
+Added Net: Name=SV+
+Added Pin To Net: NetName=SV- Pin=J2-4
+Added Pin To Net: NetName=SV- Pin=MD1-5
+Added Net: Name=SV-
+Added Pin To Net: NetName=TX0 Pin=J3-4
+Added Pin To Net: NetName=TX0 Pin=MD1-35
+Added Pin To Net: NetName=TX0 Pin=R8-2
+Added Net: Name=TX0
+Added Member To Class: ClassName=PCB1 Member=Component J2 M52-040023V2045
+Added Member To Class: ClassName=PCB1 Member=Component J3 M52-040023V2045
