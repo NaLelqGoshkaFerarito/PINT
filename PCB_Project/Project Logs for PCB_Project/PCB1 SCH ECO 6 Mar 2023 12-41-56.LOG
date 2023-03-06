@@ -1,0 +1,2 @@
+Remove Pin=I2C1-3 From Net=3V3
+Remove Pin=I2C2-3 From Net=3V3
