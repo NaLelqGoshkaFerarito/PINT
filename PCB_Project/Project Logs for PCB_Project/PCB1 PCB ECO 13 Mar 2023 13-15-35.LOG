@@ -1,0 +1,10 @@
+Removed Pin From Net: NetName=5V Pin=R6-2
+Removed Pin From Net: NetName=5V Pin=R7-2
+Removed Pin From Net: NetName=5V Pin=U1-8
+Change Component Designator: OldDesignator=3V7 NewDesignator=1
+Added Pin To Net: NetName=5V Pin=D3-1
+Added Pin To Net: NetName=5V Pin=R6-1
+Added Pin To Net: NetName=VBUS_T Pin=R6-2
+Added Pin To Net: NetName=VBUS_T Pin=R7-2
+Added Pin To Net: NetName=VBUS_T Pin=U1-8
+Added Net: Name=VBUS_T
