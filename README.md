@@ -1,5 +1,4 @@
-# PINT
-Project Integration repository
+# Mechanical design
 
 ## Body
 Contains the whole 3D design (in 1 generic format and 1 Fusion-360-specific format)
