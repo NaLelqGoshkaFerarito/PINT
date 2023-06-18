@@ -1,6 +1,6 @@
 
 #include "myheader.hpp"
-#define FORMAT_SPIFFS_IF_FAILED true
+#define FORMAT_LITTLEFS_IF_FAILED true
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
@@ -16,10 +16,10 @@ volatile msg my_own_msg;
 volatile bool warning ; //For patient health
 volatile bool wakeup ;
 volatile bool alarmtime = false;
-struct alarm my_signal[2]={{0,13,1},{0,0,0}};
+struct alarm my_signal[2]={{1,02,1},{0,0,0}};
 String message = "This message was brought to you by Health Instruments!";
 String firstName, lastName, room;
-const TickType_t delaysleep = 3000;
+const TickType_t delaysleep = 3000, waitAlarm = 61000;
 TickType_t lastTime = 0, alarmTime = 0;
 // Interrupt for button to discard alert and warning
 void discard(void*arg){
@@ -31,7 +31,7 @@ void discard(void*arg){
       
       warning = false;
       
-      
+      alarmTime = xTaskGetTickCount();
       
       if((xTaskGetTickCount() - lastTime) > delaysleep){
         if(digitalRead(button) == 0){
@@ -46,6 +46,9 @@ void discard(void*arg){
 }
 
 bool checkalarm(struct tm timeinfo){
+  if(xTaskGetTickCount() - alarmTime < waitAlarm){
+    return false;
+  }
   for(uint8_t i = 0; i < 2; i++){
     if(timeinfo.tm_hour == my_signal[i].hour && timeinfo.tm_min == my_signal[i].minute && my_signal[i].set){
       return true;
@@ -86,6 +89,7 @@ void display_task(void*args){
     else{
       if(checkalarm(timeinfo)){
         display.drawBitmap(34,0,alarm_icon,30,28,WHITE);
+        
         tone(buzzer,120,500);
       }
       else if(warning){
@@ -318,14 +322,39 @@ void HttpPostRequest(){
     } 
   
 }
+
+void readFile(fs::FS &fs, const char * path){
+    Serial.printf("Reading file: %s\r\n", path);
+
+    File file = fs.open(path);
+    if(!file || file.isDirectory()){
+        Serial.println("- failed to open file for reading");
+        return;
+    }
+
+    Serial.println("- read from file:");
+    while(file.available()){
+        Serial.write(file.read());
+    }
+    file.close();
+}
+void appendFile(fs::FS &fs, const char * path, const char * message){
+    Serial.printf("Appending to file: %s\r\n", path);
+
+    File file = fs.open(path, FILE_APPEND);
+    if(!file){
+        Serial.println("- failed to open file for appending");
+        return;
+    }
+    if(file.print(message)){
+        Serial.println("- message appended");
+    } else {
+        Serial.println("- append failed");
+    }
+    file.close();
+}
 void write_read_file(){
   if(WiFi.status()!=WL_CONNECTED){
-    File file = SPIFFS.open("/spiffs/data.txt", "a+");
-
-    if (!file) {
-    Serial.println("Error opening file for writing");
-    return;
-    }
     if(my_own_msg.validHeartRate == 1 && my_own_msg.validSPO2 == 1){
       struct tm timeinfo;
       getLocalTime(&timeinfo);
@@ -333,25 +362,12 @@ void write_read_file(){
       strftime(time_info,22,"%F%%20%H-%M-%S",&timeinfo);
       String data = String(time_info) + " heartRate: " + \
       String(my_own_msg.heartRate) + " spO2: " + String(my_own_msg.spo2) ;
-      int bytesWritten = file.println(data.c_str());
- 
-      if (bytesWritten == 0) {
-      Serial.println("File write failed");
-      return;
-      }
-    }
-    file.close();
-    file = SPIFFS.open("/spiffs/data.txt", "r");
-    if (!file) {
-      Serial.println("Error opening file for reading");
+      appendFile(LITTLEFS,"/data.txt",data.c_str());
+      readFile(LITTLEFS,"/data.txt");
       return;
     }
-    Serial.println("− read from file:");
-    while(file.available()){
-      Serial.write(file.read());
-    }
-    file.close();
   }
+    
 }
 
 void signal(void*arg){
@@ -417,6 +433,7 @@ void signal(void*arg){
     vTaskDelay(pdMS_TO_TICKS(2000));
   }
 }
+
 /* Send signal to Google Home
 */
 void send_signalGH(void *arg){
@@ -477,12 +494,13 @@ void logo_start(){
   }
  
 }
+
 void setup()
 {
   Serial.begin(115200); // initialize serial communication at 115200 bits per second:
   wakeup = true;
   warning = false;
- 
+  Serial.setDebugOutput(true);
 
   // Initialize sensor
   if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) //Use default I2C port, 400kHz speed
@@ -517,12 +535,9 @@ void setup()
   logo_start();
   // Init and get the time
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-  bool success = SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED);
- 
-  if(success){
-    Serial.println("File system mounted with success");  
-  }else{
-    Serial.println("Error mounting the file system");  
+  if(!LITTLEFS.begin(FORMAT_LITTLEFS_IF_FAILED)){
+      Serial.println("LITTLEFS Mount Failed");
+        
   }
   
   mutex = xSemaphoreCreateMutex();
@@ -532,10 +547,11 @@ void setup()
   xTaskCreate(send_signalGH,"Send signal to Google Home",8000,NULL,1,NULL);
   xTaskCreate(biometric_data_collect,"bio metric collector",8056,NULL,1,NULL);
   xTaskCreate(display_task,"display task",10045,NULL,1,NULL);
-  xTaskCreate(signal,"Get signal",20048,NULL,1,NULL);
+  xTaskCreate(signal,"Get signal",16048,NULL,1,NULL);
   xTaskCreate(discard,"Discard signal",2000,NULL,3,NULL);
   
   vTaskStartScheduler();
+  
 }
 
 void loop()

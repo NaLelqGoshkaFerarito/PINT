@@ -16,8 +16,8 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include <esp8266-google-home-notifier.h>
-#include <FS.h>
-#include <SPIFFS.h>
+
+#include <LittleFS.h>
 const unsigned char heart_icon [] PROGMEM = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0f, 0x0f, 0x00, 0x1f, 
 0x9f, 0x80, 0x1f, 0xff, 0x80, 0x1f, 0xff, 0x80, 0x1f, 0xff, 0x80, 0x1f, 0xff, 0x80, 0x0f, 0xff, 
@@ -1343,12 +1343,12 @@ struct alarm{
   bool set;
 };
 
-//const char* ssid = "Ziggo5578958";
-//const char* password = "tgMsqtwd2spp";
+const char* ssid = "Ziggo5578958";
+const char* password = "tgMsqtwd2spp";
 //const char* ssid     = "meh";
 //const char* password = "askyourmom";
-const char* ssid = "Nokia 3.4";
-const char* password = "Minh1234";
+// const char* ssid = "Nokia 3.4";
+// const char* password = "Minh1234";
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 3600;
 const int   daylightOffset_sec = 3600;
