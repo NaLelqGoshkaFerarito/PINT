@@ -1,148 +1,46 @@
 
-
-#include <Arduino.h>
-#include <Wire.h>
-#include "MAX30105.h"
-#include "spo2_algorithm.h"
-#include <freertos/FreeRTOS.h>
-#include <freertos/queue.h>
-#include <freertos/semphr.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
-#include <WiFi.h>
-#include <WiFiClientSecure.h>
-#include <time.h>
-#include <HTTPClient.h>
-#include <ArduinoJson.h>
-
-const unsigned char heart_icon [] PROGMEM = {
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0f, 0x0f, 0x00, 0x1f, 
-0x9f, 0x80, 0x1f, 0xff, 0x80, 0x1f, 0xff, 0x80, 0x1f, 0xff, 0x80, 0x1f, 0xff, 0x80, 0x0f, 0xff, 
-0x00, 0x07, 0xfe, 0x00, 0x03, 0xfc, 0x00, 0x00, 0xf0, 0x00, 0x00, 0x60, 0x00, 0x00, 0x00, 0x00, 
-0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-};
-const unsigned char spo2_icon [] PROGMEM = {
-0xff, 0xfe, 0xff, 0xfe, 0xfe, 0xfe, 0xfe, 0xfe, 0xfc, 0x7e, 0xfc, 0x7e, 0xf8, 0x7e, 0xf8, 0x3e, 
-	0xf0, 0x3e, 0xf0, 0x1e, 0xe0, 0x0e, 0xc0, 0x0e, 0xc6, 0x06, 0x9f, 0x06, 0x9b, 0xe2, 0x99, 0xf2, 
-	0x99, 0xf2, 0x9f, 0x62, 0x8e, 0x76, 0xc0, 0x06, 0xc0, 0x0e, 0xe0, 0x1e, 0xf8, 0x3e, 0xff, 0xfe
-};
-const unsigned char alarm_icon [] PROGMEM = {
-	0xc0, 0xff, 0xf8, 0x0c, 0x80, 0x3f, 0xf0, 0x04, 0x80, 0x60, 0x18, 0x04, 0x01, 0x80, 0x06, 0x00, 
-	0x02, 0x07, 0x81, 0x00, 0x04, 0x3c, 0xf0, 0x80, 0x08, 0xdc, 0xe8, 0x40, 0x11, 0xcf, 0xce, 0x20, 
-	0x11, 0xcf, 0xce, 0x20, 0x23, 0xfc, 0xff, 0x10, 0xe4, 0x78, 0x78, 0x9c, 0xe6, 0x7c, 0xf9, 0x9c, 
-	0xc7, 0xfc, 0xff, 0x8c, 0xcf, 0xfc, 0xdf, 0xcc, 0xc9, 0xf8, 0x06, 0x4c, 0xc8, 0xf8, 0x04, 0x4c, 
-	0xcf, 0xfc, 0xcf, 0xcc, 0xc7, 0xff, 0xff, 0x8c, 0xc6, 0xff, 0xfd, 0x8c, 0xe4, 0x7f, 0xf8, 0x9c, 
-	0xe0, 0xff, 0xfc, 0x1c, 0xf3, 0xff, 0xff, 0x3c, 0xf1, 0xcf, 0xce, 0x3c, 0xf0, 0x9c, 0xe4, 0x3c, 
-	0xe0, 0x3c, 0xf0, 0x1c, 0xe0, 0x0f, 0xc0, 0x1c, 0xe3, 0x00, 0x03, 0x1c, 0xf7, 0xe0, 0x1f, 0xbc
-};
-// 'warning', 30x30px
-const unsigned char warning_icon [] PROGMEM = {
-	0xff, 0xff, 0xff, 0xfc, 0xff, 0xff, 0xff, 0xfc, 0xff, 0xff, 0xff, 0xfc, 0xff, 0xf8, 0x7f, 0xfc, 
-	0xff, 0xf0, 0x3f, 0xfc, 0xff, 0xf0, 0x3f, 0xfc, 0xff, 0xe0, 0x1f, 0xfc, 0xff, 0xe0, 0x1f, 0xfc, 
-	0xff, 0xc0, 0x0f, 0xfc, 0xff, 0x83, 0x07, 0xfc, 0xff, 0x87, 0x87, 0xfc, 0xff, 0x07, 0x83, 0xfc, 
-	0xff, 0x07, 0x83, 0xfc, 0xfe, 0x07, 0x81, 0xfc, 0xfc, 0x03, 0x00, 0xfc, 0xfc, 0x03, 0x00, 0xfc, 
-	0xf8, 0x03, 0x00, 0x7c, 0xf8, 0x03, 0x00, 0x7c, 0xf0, 0x03, 0x00, 0x3c, 0xf0, 0x00, 0x00, 0x3c, 
-	0xe0, 0x00, 0x00, 0x1c, 0xc0, 0x03, 0x00, 0x0c, 0xc0, 0x07, 0x80, 0x0c, 0x80, 0x07, 0x80, 0x04, 
-	0x80, 0x00, 0x00, 0x04, 0x80, 0x00, 0x00, 0x04, 0xc0, 0x00, 0x00, 0x0c, 0xff, 0xff, 0xff, 0xfc, 
-	0xff, 0xff, 0xff, 0xfc, 0xff, 0xff, 0xff, 0xfc
-};
-
-const static char* root_mem_ca PROGMEM = \
-"-----BEGIN CERTIFICATE-----\n"
-"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\n"
-"-----END CERTIFICATE-----\n";
-
-#define MAX_BRIGHTNESS 255
-
-#if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__)
-//Arduino Uno doesn't have enough SRAM to store 100 samples of IR led data and red led data in 32-bit format
-//To solve this problem, 16-bit MSB of the sampled data will be truncated. Samples become 16-bit data.
-uint16_t irBuffer[100]; //infrared LED sensor data
-uint16_t redBuffer[100];  //red LED sensor data
-#else
-uint32_t irBuffer[100]; //infrared LED sensor data
-uint32_t redBuffer[100];  //red LED sensor data
-#endif
-#define buzzer 32
-#define button 16
-#define voltpin 33
-
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
-// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
-#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+#include "myheader.hpp"
+#define FORMAT_SPIFFS_IF_FAILED true
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
-
-
 MAX30105 particleSensor;
-static xQueueHandle msg_queue; //Queue for display
+
+
+GoogleHomeNotifier ghome;
 
 static SemaphoreHandle_t mutex;
-typedef struct {
- 
-  int32_t heartRate;
-  int32_t spo2;
-  int8_t validSPO2;
-  int8_t validHeartRate;
-}msg;
-struct alarm{
-  uint8_t hour;
-  uint8_t minute;
-  bool set;
-};
+
 
 volatile msg my_own_msg;
 volatile bool warning ; //For patient health
 volatile bool wakeup ;
+volatile bool alarmtime = false;
 struct alarm my_signal[2]={{0,13,1},{0,0,0}};
-const char* ssid = "Ziggo5578958";
-const char* password = "tgMsqtwd2spp";
-//const char* ssid = "Nokia 3.4";
-//const char* password = "Minh1234";
-const char* ntpServer = "pool.ntp.org";
-const long  gmtOffset_sec = 3600;
-const int   daylightOffset_sec = 3600;
-const String id ="0001"; 
-const String server ="https://jessedijksma.com";
-const String apikey = "6fas6ABat7shfg14";
+String message = "This message was brought to you by Health Instruments!";
+String firstName, lastName, room;
+const TickType_t delaysleep = 3000;
+TickType_t lastTime = 0, alarmTime = 0;
 // Interrupt for button to discard alert and warning
 void discard(void*arg){
   while(1){
-    if(digitalRead(button) == 0){
-      warning = false;
+    while(digitalRead(button) == 0){
+     
       my_signal[0].set = false;
       my_signal[1].set = false;
+      
+      warning = false;
+      
+      
+      
+      if((xTaskGetTickCount() - lastTime) > delaysleep){
+        if(digitalRead(button) == 0){
+          wakeup = !wakeup;
+        }
+        
+      }
     }
+    lastTime = xTaskGetTickCount();
   }
   
 }
@@ -171,34 +69,34 @@ void display_task(void*args){
       WiFi.disconnect();
       WiFi.reconnect();
       configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-      vTaskDelay(pdMS_TO_TICKS(500));
+      vTaskDelay(pdMS_TO_TICKS(2000));
     }
-   // msg recv_msg;
-   // xQueueReceive(msg_queue,(void*)&recv_msg,0);
+  
     xSemaphoreTake(mutex, portMAX_DELAY);
     
     display.clearDisplay();
-
+    
     display.setTextSize(1);      // Normal 1:1 pixel scale
     display.setTextColor(WHITE); // Draw white text
     display.setCursor(0, 0);     // Start at top-left corner
     if(!getLocalTime(&timeinfo)){
       display.println("Failed to obtain time");
+      configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
     }
     else{
       if(checkalarm(timeinfo)){
-        display.drawBitmap(0,0,alarm_icon,30,28,WHITE);
+        display.drawBitmap(34,0,alarm_icon,30,28,WHITE);
         tone(buzzer,120,500);
       }
       else if(warning){
-       display.drawBitmap(0,0,warning_icon,30,30,WHITE);
+       display.drawBitmap(34,0,warning_icon,30,30,WHITE);
        tone(180,1000);
       }
       else{
         char time_info[10];
         strftime(time_info,10,"%H:%M:%S",&timeinfo);
         display.setCursor(0,0);
-        display.setTextSize(1);
+        display.setTextSize(2);
         display.setTextColor(WHITE);
         display.println(time_info);
         tone(buzzer,0);
@@ -210,6 +108,7 @@ void display_task(void*args){
    
     display.drawBitmap(0,40,heart_icon,20,20,INVERSE);
     display.drawBitmap(80,40,spo2_icon,15,24,WHITE);
+    display.setTextSize(1);
     if(my_own_msg.validHeartRate !=1 || my_own_msg.validSPO2 !=1 ){
         display.setCursor(23,40);
         display.printf(" ");
@@ -217,12 +116,14 @@ void display_task(void*args){
         display.printf(" ");
     }
     else{
-        display.setCursor(20,40);
+        display.setCursor(20,44);
         display.printf(":%d bpm",my_own_msg.heartRate);
-        display.setCursor(90,40);
+        display.setCursor(90,45);
         display.printf(":%d %",my_own_msg.spo2);
     }
-    
+    if(!wakeup){
+      display.clearDisplay();
+    }
     display.display();
     xSemaphoreGive(mutex);   
     taskYIELD();
@@ -279,14 +180,12 @@ void biometric_data_collect(void*args){
       particleSensor.nextSample(); //We're finished with this sample so move to next sample
       xSemaphoreGive(mutex); 
       taskYIELD();
-      // my_msg.heartRate = heartRate;
-      // my_msg.spo2 = spo2;
-      // my_msg.validHeartRate = validHeartRate;
-      // my_msg.validSPO2 = validSPO2;
+     
       my_own_msg.heartRate = heartRate;
       my_own_msg.spo2 = spo2;
       my_own_msg.validHeartRate = validHeartRate;
       my_own_msg.validSPO2 = validSPO2;
+      /*
        Serial.print(F("red="));
       Serial.print(redBuffer[i], DEC);
       Serial.print(F(", ir="));
@@ -303,6 +202,7 @@ void biometric_data_collect(void*args){
 
       Serial.print(F(", SPO2Valid="));
       Serial.println(validSPO2, DEC);
+      */
       //xQueueSend(msg_queue,(void*)&my_msg,(TickType_t)0);
       if(validHeartRate ==1 &&validSPO2 ==1 ){
         if(heartRate > 130 || heartRate < 60 || spo2 < 80){
@@ -324,8 +224,9 @@ void biometric_data_collect(void*args){
   }
 }
 String httpGETRequest(const char* serverName) {
-  HTTPClient http;
-  
+  if(WiFi.status() == WL_CONNECTED){
+    HTTPClient http;
+ 
   // Your IP address with path or Domain name with URL path 
   http.begin(serverName);
 
@@ -351,6 +252,10 @@ String httpGETRequest(const char* serverName) {
   http.end();
 
   return payload;
+  }
+  else{
+    return "None";
+  }
 }
 void HttpPostRequest(){
   if(my_own_msg.validHeartRate == 1 && my_own_msg.validSPO2 == 1){
@@ -362,10 +267,14 @@ void HttpPostRequest(){
       String http_header = server + "/post-biometric-data.php";
       // Set the target URL
       http.begin(*client,http_header.c_str());
-
+      struct tm timeinfo;
+      getLocalTime(&timeinfo);
+      char time_info[22];
+      strftime(time_info,22,"%F%%20%H-%M-%S",&timeinfo);
       // Set the headers
       http.addHeader("Content-Type", "application/x-www-form-urlencoded");
       String payload = "api_key=" + apikey +"&patientID=" + id \
+        + "&time=" + String(time_info) 
         + "&heartRate=" + String(my_own_msg.heartRate) + "&spO2=" + String(my_own_msg.spo2);
       Serial.println(payload);
       // Send HTTP POST request
@@ -374,60 +283,207 @@ void HttpPostRequest(){
     
     
     if (httpResponseCode>0) {
-      Serial.print("HTTP POST Response code: ");
+      Serial.print("HTTP POST Response code data: ");
       Serial.println(httpResponseCode);
     }
     else {
       Serial.print("Error code: ");
       Serial.println(httpResponseCode);
     }
+    if(warning){
+      http_header = server + "/post-warning.php";
+      http.begin(*client,http_header.c_str());
+
+      // Set the headers
+      http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+      String payload = "api_key=" + apikey +"&patientID=" + id \
+        + "&warning=1";
+      Serial.println(payload);
+      // Send HTTP POST request
+    int httpResponseCode = http.POST(payload);
+    if (httpResponseCode>0) {
+      Serial.print("HTTP POST Response code warning: ");
+      Serial.println(httpResponseCode);
+    }
+    else {
+      Serial.print("Error code: ");
+      Serial.println(httpResponseCode);
+    }
+    }
     // Free resources
     http.end();
-
+    client->~WiFiClientSecure();
     }
 
     } 
   
 }
+void write_read_file(){
+  if(WiFi.status()!=WL_CONNECTED){
+    File file = SPIFFS.open("/spiffs/data.txt", "a+");
+
+    if (!file) {
+    Serial.println("Error opening file for writing");
+    return;
+    }
+    if(my_own_msg.validHeartRate == 1 && my_own_msg.validSPO2 == 1){
+      struct tm timeinfo;
+      getLocalTime(&timeinfo);
+      char time_info[22];
+      strftime(time_info,22,"%F%%20%H-%M-%S",&timeinfo);
+      String data = String(time_info) + " heartRate: " + \
+      String(my_own_msg.heartRate) + " spO2: " + String(my_own_msg.spo2) ;
+      int bytesWritten = file.println(data.c_str());
+ 
+      if (bytesWritten == 0) {
+      Serial.println("File write failed");
+      return;
+      }
+    }
+    file.close();
+    file = SPIFFS.open("/spiffs/data.txt", "r");
+    if (!file) {
+      Serial.println("Error opening file for reading");
+      return;
+    }
+    Serial.println("− read from file:");
+    while(file.available()){
+      Serial.write(file.read());
+    }
+    file.close();
+  }
+}
+
 void signal(void*arg){
   while(1){
     String req = server + "/getalarm.php?patientID=" + id;
     String recv = httpGETRequest(req.c_str());
     Serial.println(recv);
     StaticJsonDocument<256> doc;
+    if(recv != "None"){
+      
 
     DeserializationError error = deserializeJson(doc, recv);
 
     if (error) {
       Serial.print("deserializeJson() failed: ");
       Serial.println(error.c_str());
-      continue;
+      
     }
+    else{
+      for (JsonObject item : doc.as<JsonArray>()) {
 
-    for (JsonObject item : doc.as<JsonArray>()) {
+      const char* alarmID = item["alarmID"]; // "1", "2"
+      const char* patientID = item["patientID"]; // "0001", "0001"
+      const char* alarmTime = item["alarmTime"]; // "18:09:01", "05:13:55"
+      const char* description = item["description"]; // "test", "test"
+      char strhour[3], strmin[3];
+      strncpy(strhour,&alarmTime[0],2);
+      strncpy(strmin,&alarmTime[3],2);
+      my_signal[atoi(alarmID)-1].hour = atoi(strhour);
+      my_signal[atoi(alarmID)-1].minute = atoi(strmin);
+      my_signal[atoi(alarmID)-1].set = true;
 
-    const char* alarmID = item["alarmID"]; // "1", "2"
-    const char* patientID = item["patientID"]; // "0001", "0001"
-    const char* alarmTime = item["alarmTime"]; // "18:09:01", "05:13:55"
-    char strhour[3], strmin[3];
-    strncpy(strhour,&alarmTime[0],2);
-    strncpy(strmin,&alarmTime[3],2);
-    my_signal[atoi(alarmID)-1].hour = atoi(strhour);
-    my_signal[atoi(alarmID)-1].minute = atoi(strmin);
-    my_signal[atoi(alarmID)-1].set = true;
+      } 
+    }
+    }
+   
+    req = server + "/get_name.php"+ "?api_key=" + apikey +"&patientID="+id;
+    recv = httpGETRequest(req.c_str());
+    if(recv != "None"){
+      DeserializationError error = deserializeJson(doc, recv);
 
-    } 
+      if (error) {
+        Serial.print("deserializeJson() failed: ");
+        Serial.println(error.c_str());
+      
+      }
+      else{
+        JsonObject root_0 = doc[0];
+        const char* root_0_firstName = root_0["firstName"]; // "Henk"
+        const char* root_0_lastName = root_0["lastName"]; // "Gerards"
+        const char* root_0_sex = root_0["sex"]; // "M"
+        const char* root_0_room = root_0["room"]; // "W34"
+        firstName = root_0_firstName;
+        lastName = root_0_lastName;
+        room = root_0_room;
+      }
     
+    }
+    
+    Serial.printf("firstName: %s, lastName: %s, room: %s\n",firstName, lastName,room);
     HttpPostRequest();
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    write_read_file();
+    vTaskDelay(pdMS_TO_TICKS(2000));
   }
+}
+/* Send signal to Google Home
+*/
+void send_signalGH(void *arg){
+  Serial.println("Finding Home...");
+  if (ghome.device(homeName,"en") != true) {
+    Serial.println(ghome.getLastError());
+   
+  }
+  Serial.print("Home found!(");
+  Serial.print(ghome.getIPAddress());
+  Serial.println(")");
+  
+  if (ghome.notify(message.c_str()) != true) {
+    Serial.println(ghome.getLastError());
+  }
+  struct tm timeinfo;
+  while(1){
+    if(my_own_msg.validSPO2 == 1 && my_own_msg.validHeartRate == 1){//
+      if(my_own_msg.heartRate > 130){
+        message = "Heart rate of " + firstName + lastName + "in room " + room +  " is too high";
+      }
+      else{
+        message =  "Heart rate of " + firstName + lastName + "in room " + room +  "is too low";
+      }
+      if (my_own_msg.spo2 <80){
+        message = message + "and pulse oxygen is too low";
+      }
+
+      if (ghome.notify(message.c_str()) != true) {
+      Serial.println(ghome.getLastError());
+      }
+    }
+    else{
+      message = "";
+       if (ghome.notify(message.c_str()) != true) {
+      Serial.println(ghome.getLastError());
+      }
+    }
+    getLocalTime(&timeinfo);
+    if(checkalarm(timeinfo)){
+      message = firstName + lastName + " you are now having alarm";
+    }
+    if (ghome.notify(message.c_str()) != true) {
+      Serial.println(ghome.getLastError());
+    }
+    vTaskDelay(pdMS_TO_TICKS(2000));
+  }
+  
+}
+void logo_start(){
+  for(int i = 0; i < 2; i++){
+    for(int j = 0; j < bitmap_allArray_LEN; j++){
+    display.clearDisplay();
+    display.drawBitmap(34,0,bitmap_allArray[j],60,60,WHITE);
+    display.display();
+  }
+  vTaskDelay(pdMS_TO_TICKS(500));
+  }
+ 
 }
 void setup()
 {
   Serial.begin(115200); // initialize serial communication at 115200 bits per second:
-  wakeup = false;
+  wakeup = true;
   warning = false;
-  
+ 
+
   // Initialize sensor
   if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) //Use default I2C port, 400kHz speed
   {
@@ -458,21 +514,27 @@ void setup()
   }
   Serial.println("");
   Serial.println("WiFi connected.");
-  
+  logo_start();
   // Init and get the time
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-  msg_queue=xQueueCreate(25,sizeof(msg));
-  if(msg_queue == NULL){
-    Serial.println("Queue initialization failed");
+  bool success = SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED);
+ 
+  if(success){
+    Serial.println("File system mounted with success");  
+  }else{
+    Serial.println("Error mounting the file system");  
   }
+  
   mutex = xSemaphoreCreateMutex();
   pinMode(buzzer,OUTPUT);
   pinMode(button,INPUT_PULLUP);
   //attachInterrupt(button,discard,RISING);
-  xTaskCreate(biometric_data_collect,"bio metric collector",4056,NULL,2,NULL);
-  xTaskCreate(display_task,"display task",10045,NULL,2,NULL);
-  xTaskCreate(signal,"Get signal",8048,NULL,2,NULL);
-  xTaskCreate(discard,"Discard signal",1000,NULL,3,NULL);
+  xTaskCreate(send_signalGH,"Send signal to Google Home",8000,NULL,1,NULL);
+  xTaskCreate(biometric_data_collect,"bio metric collector",8056,NULL,1,NULL);
+  xTaskCreate(display_task,"display task",10045,NULL,1,NULL);
+  xTaskCreate(signal,"Get signal",20048,NULL,1,NULL);
+  xTaskCreate(discard,"Discard signal",2000,NULL,3,NULL);
+  
   vTaskStartScheduler();
 }
 
